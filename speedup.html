@@ -1,0 +1,177 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="libs/font-awesome/css/font-awesome.min.css">
+  <script language="javascript" type="text/javascript" src="libs/p5.min.js"></script>
+  <script language="javascript" src="libs/p5.dom.min.js"></script>
+  <script language="javascript" src="libs/p5.sound.min.js"></script>
+  <!-- <script language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+  <script language="javascript" src="libs/jquery.js"></script>
+  <script language="javascript" type="text/javascript" src="script/p5speedup.js"></script>
+  <script>
+    $(document).ready(function(){
+      $("i.fa").hide();
+      $("#divScore").hide();
+      $("#settings").hide();
+      $("#btnsettings").click(function(){
+        $("#settings").toggle();
+        pause ^= true;
+        $("p.lettre").toggle();
+      });
+      $("#fullscreen").click(function(){
+        goFullScreen();
+      });
+      $("a#recommencer").click(function(){
+        nouvellePartie();
+      });
+    });
+  </script>
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+
+    *{
+      padding:0;
+      margin:0;
+      box-sizing: border-box;
+      font-family:"Trebuchet MS",sans-serif;
+    }
+
+    html, div, body {
+      overflow:hidden;
+    }
+
+    #p5container{
+      position:relative;
+    }
+
+    canvas{
+      display:block;
+      margin:0 auto;
+    }
+
+    body>button{
+      display:block;
+      margin:0 auto;
+    }
+
+    div{
+      margin:0 auto;
+      text-align: center;
+    }
+
+    /*p.hud{
+      opacity:0.75;
+    }*/
+
+    p.lettre{
+      z-index:1;
+      padding:0;
+      display:inline-block;
+      font-family: 'Georgia',serif;
+      transform:translateX(-50%) translateY(-78%);
+      text-shadow: -1px 0 3px white, 0 1px 3px white, 1px 0 3px white, 0 -1px 3px white;
+    }
+
+    p.atranslater{
+      transform:translateX(-50%);
+    }
+
+    /*p.spin{
+    position: absolute;
+    -webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
+    }
+    @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+    @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+    @keyframes spin { 100% { -moz-transform: rotate(360deg); transform:rotate(360deg); } }
+*/
+    i.fa{
+      display:inline-block;
+      width:36px;
+      height:36px;
+      /*line-height: 36px;*/ /*j'ai pas compris line-height fait exactement l'inverse de ce que je veux, quoique ça marche peut-être qu'avec block*/
+      position:absolute;
+      border:2px solid rgba(0, 57, 153, 0.7);
+      border-radius: 15%;
+      background-color: rgba(255, 255, 255, 0.5);
+      opacity:0.6;
+    }
+    i.fa:hover{
+      border:2px solid rgba(0, 57, 153, 0.9);
+      background-color: rgba(255, 255, 255, 0.7);
+      opacity:0.9;
+    }
+    i.fa-cog{
+      right:3%;
+      top:90px;
+    }
+    i.fa-arrows-alt{
+      right:3%;
+      top:130px;
+    }
+    i.fa-square-o{
+      right:3%;
+      top:170px;
+      color:white;
+    }
+    #settings{
+      position:absolute;
+      border:2px solid rgba(0, 57, 153, 0.9);
+      background-color: rgba(255, 255, 255, 0.7);
+      opacity:0.65;
+      width:40vw;
+      height:30vh;
+    }
+    #divScore{
+      z-index:2;
+      position:absolute;
+      width:40vw;
+      top:50%;
+      left:50%;
+      transform: translateX(-50%) translateY(-50%);
+      background-color: #00BFFF;
+      border:2px solid rgba(0, 57, 153, 0.7);
+      border-radius: 5vh;
+    }
+    #recommencer{
+      color: #0275d8;
+      cursor: pointer;
+      } /*comme un lien*/
+    #recommencer:hover{
+      color: #014c8c;
+      text-decoration: underline;
+      } /*comme un lien*/
+
+</style>
+</head>
+
+<body>
+  <div id="p5container">
+
+    <i class="fa fa-cog fa-2x" id="btnsettings" aria-hidden="true"></i>
+    <i class="fa fa-arrows-alt fa-2x" id="fullscreen" aria-hidden="true"></i>
+    <i class="fa fa-square-o fa-2x" id="border" aria-hidden="true"></i>
+    <div id="settings"></div>
+    <div id="divScore">
+      <h1 style="margin-top:20px;">Game Over</h1>
+      <h3 style="margin-top:20px;"></h3>
+      <form action="speedupForm.php" method="post" id="formScore" style="">
+      <!-- style="margin:5% 0 5% 50% ; transform:translateX(-50%);" -->
+        <div class="col-5" style="margin-top:20px;">
+          <input type="text" class="form-control" name="pseudo" placeholder="pseudonyme" maxlength="20" required>
+          <input type="hidden" class="form-control" name="score" value="">
+        </div>
+        <div class="col-4" style="margin-top:10px;">
+          <button type="submit" class="btn btn-primary" style="margin:20px;">Soumettre le score</button>
+        </div>
+        <p><a href="speedupForm.php">Tableau des scores</a></p>
+        <p><a id="recommencer">Recommencer</a></p> <!-- l'attribut href donne l'apparence de lien -->
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
